@@ -6,6 +6,8 @@ import { SessionService } from '../../../../services/session.service';
 import { TeacherService } from '../../../../services/teacher.service';
 import { Session } from '../../interfaces/session.interface';
 import { SessionApiService } from '../../services/session-api.service';
+import {Observable} from "rxjs";
+import {Teacher} from "../../../../interfaces/teacher.interface";
 
 @Component({
   selector: 'app-form',
@@ -16,7 +18,7 @@ export class FormComponent implements OnInit {
 
   public onUpdate: boolean = false;
   public sessionForm: FormGroup | undefined;
-  public teachers$ = this.teacherService.all();
+  public teachers$: Observable<Teacher[]> | undefined;
   private id: string | undefined;
 
   constructor(
@@ -31,6 +33,8 @@ export class FormComponent implements OnInit {
   }
 
   public ngOnInit(): void {
+    this.teachers$ = this.teacherService.all();
+
     if (!this.sessionService.sessionInformation!.admin) {
       this.router.navigate(['/sessions']);
     }

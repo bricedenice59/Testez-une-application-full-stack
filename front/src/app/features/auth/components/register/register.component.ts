@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { RegisterRequest } from '../../interfaces/registerRequest.interface';
@@ -13,43 +13,44 @@ export class RegisterComponent {
 
   public onError = false;
 
-  public form = this.fb.group({
-    email: [
-      '',
-      [
-        Validators.required,
-        Validators.email
-      ]
-    ],
-    firstName: [
-      '',
-      [
-        Validators.required,
-        Validators.min(3),
-        Validators.max(20)
-      ]
-    ],
-    lastName: [
-      '',
-      [
-        Validators.required,
-        Validators.min(3),
-        Validators.max(20)
-      ]
-    ],
-    password: [
-      '',
-      [
-        Validators.required,
-        Validators.min(3),
-        Validators.max(40)
-      ]
-    ]
-  });
+  public form: FormGroup<{ email: FormControl<string | null>; firstName: FormControl<string | null>; lastName: FormControl<string | null>;  password: FormControl<string | null>;}>;
 
   constructor(private authService: AuthService,
               private fb: FormBuilder,
               private router: Router) {
+    this.form = this.fb.group({
+      email: [
+        '',
+        [
+          Validators.required,
+          Validators.email
+        ]
+      ],
+      firstName: [
+        '',
+        [
+          Validators.required,
+          Validators.min(3),
+          Validators.max(20)
+        ]
+      ],
+      lastName: [
+        '',
+        [
+          Validators.required,
+          Validators.min(3),
+          Validators.max(20)
+        ]
+      ],
+      password: [
+        '',
+        [
+          Validators.required,
+          Validators.min(3),
+          Validators.max(40)
+        ]
+      ]
+    });
   }
 
   public submit(): void {

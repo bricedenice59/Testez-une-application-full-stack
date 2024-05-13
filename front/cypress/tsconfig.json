@@ -1,6 +1,14 @@
+/*
+* Cypress 13.9.0(latest) as of now has-an issue in eZe tests with 'sourceMap' •and• typescript@5.4.5 (latest):
+•* "Option• 'sourceMap' • cannot • be specified with option 'inlineSourceMap'."
+* Remove the sourceMap: false when the issue will be fixed.
+*
+* https://github.com/cypress-io/cypress/issues/26203
+*/
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
+    "sourceMap": false,
     "isolatedModules": false
   },
   "include": [
