@@ -2,15 +2,14 @@ package com.openclassrooms.starterjwt.models;
 
 
 import lombok.*;
-import lombok.experimental.Accessors;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
@@ -19,7 +18,6 @@ import java.util.List;
 @Table(name = "SESSIONS")
 @EntityListeners(AuditingEntityListener.class)
 @Data
-@Accessors(chain = true)
 @EqualsAndHashCode(of = {"id"})
 @Builder
 @NoArgsConstructor

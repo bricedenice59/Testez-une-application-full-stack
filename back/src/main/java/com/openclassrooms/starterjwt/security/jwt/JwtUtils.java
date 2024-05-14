@@ -1,7 +1,10 @@
 package com.openclassrooms.starterjwt.security.jwt;
 
 import java.util.Date;
+import java.util.function.Function;
 
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +14,8 @@ import org.springframework.stereotype.Component;
 import com.openclassrooms.starterjwt.security.services.UserDetailsImpl;
 
 import io.jsonwebtoken.*;
+
+import javax.crypto.SecretKey;
 
 @Component
 public class JwtUtils {
@@ -27,20 +32,24 @@ public class JwtUtils {
     UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
 
     return Jwts.builder()
-        .setSubject((userPrincipal.getUsername()))
-        .setIssuedAt(new Date())
-        .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
-        .signWith(SignatureAlgorithm.HS512, jwtSecret)
-        .compact();
+            .subject((userPrincipal.getUsername()))
+            .issuedAt(new Date())
+            .expiration(new Date((new Date()).getTime() + jwtExpirationMs))
+            .signWith(getSignInKey())
+            .compact();
+  }
+
+  private SecretKey getSignInKey() {
+    return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
   }
 
   public String getUserNameFromJwtToken(String token) {
-    return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
+    return extractClaim(token, Claims::getSubject);
   }
 
   public boolean validateJwtToken(String authToken) {
     try {
-      Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
+      getAllClaimsFromToken(authToken);
       return true;
     } catch (SignatureException e) {
       logger.error("Invalid JWT signature: {}", e.getMessage());
@@ -55,5 +64,18 @@ public class JwtUtils {
     }
 
     return false;
+  }
+
+  private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+    final Claims claims = getAllClaimsFromToken(token);
+    return claimsResolver.apply(claims);
+  }
+
+  private Claims getAllClaimsFromToken(String token) {
+    return Jwts.parser()
+            .verifyWith(getSignInKey())
+            .build()
+            .parseSignedClaims(token)
+            .getPayload();
   }
 }
