@@ -63,9 +63,89 @@ public class SessionControllerIT {
         anotherUser = userRepository.save(newUser);
     }
 
+    //region Test unauthorized endpoints
+
+    @Test
+    @DisplayName("it should fail to create a session when no authorization is provided")
+    public void UserController_Create_ShouldReturnUnauthorizedResponse() throws Exception {
+        var sessionDto = SessionDto.builder()
+                .id(sessionId)
+                .name(sessionName)
+                .build();
+
+        var objectMapper = new ObjectMapper();
+        var json = objectMapper.writeValueAsString(sessionDto);
+
+        mockMvc.perform(post("/api/session", user.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("it should fail to find a session when no authorization is provided")
+    public void SessionController_FindById_ShouldReturnUnAuthorizedResponse() throws Exception {
+        mockMvc.perform(get("/api/session/{id}", sessionId)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
+
+    }
+
+    @Test
+    @DisplayName("it should fail to find all session when no authorization is provided")
+    public void SessionController_FindAll_ShouldReturnUnAuthorizedResponse() throws Exception {
+        mockMvc.perform(get("/api/session")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
+
+    }
+
+    @Test
+    @DisplayName("it should fail to update a session when no authorization is provided")
+    public void SessionController_Update_ShouldReturnUnAuthorizedResponse() throws Exception {
+        var sessionDto = SessionDto.builder()
+                .id(sessionId)
+                .name(sessionName)
+                .build();
+
+        var objectMapper = new ObjectMapper();
+        var json = objectMapper.writeValueAsString(sessionDto);
+
+        mockMvc.perform(post("/api/session/{id}", sessionDto)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("it should fail to participate(add a user) to a session when no authorization is provided")
+    public void SessionController_Participate_ShouldReturnUnAuthorizedResponse() throws Exception {
+        mockMvc.perform(post("/api/session/{id}/participate/{userId}", sessionId, user.getId())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("it should fail to no longer participate(delete a user) from a session when no authorization is provided")
+    public void SessionController_NoLongerParticipate_ShouldReturnUnAuthorizedResponse() throws Exception {
+        mockMvc.perform(delete("/api/session/{id}/participate/{userId}", sessionId, user.getId())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("it should fail to delete a session when no authorization is provided")
+    public void SessionController_DeleteSession_ShouldReturnUnAuthorizedResponse() throws Exception {
+        mockMvc.perform(delete("/api/session/{id}", sessionId)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
+    }
+
+    //endregion
+
     @Test
     @Order(1)
-    @DisplayName("it should create a session")
+    @DisplayName("it should successfully create a session")
     @WithUserDetails(value = "brice@denice.com")
     public void SessionController_Create_ShouldReturnOkResponse() throws Exception {
         var description = "Description Session 1";
@@ -94,7 +174,7 @@ public class SessionControllerIT {
 
     @Test
     @Order(2)
-    @DisplayName("it should find an existing session")
+    @DisplayName("it should successfully find an existing session")
     @WithUserDetails(value = "brice@denice.com")
     public void SessionController_FindById_ShouldReturnOkResponse() throws Exception {
         mockMvc.perform(get("/api/session/{id}", sessionId)
@@ -107,7 +187,7 @@ public class SessionControllerIT {
 
     @Test
     @Order(3)
-    @DisplayName("it should update an existing session")
+    @DisplayName("it should successfully update an existing session")
     @WithUserDetails(value = "brice@denice.com")
     public void SessionController_Update_ShouldReturnOkResponse() throws Exception {
         var updatedSessionName = "Updated Session 1";
@@ -178,7 +258,7 @@ public class SessionControllerIT {
 
     @Test
     @Order(8)
-    @DisplayName("it should return all created session before this test")
+    @DisplayName("it should successfully return all created session before this test")
     @WithUserDetails(value = "brice@denice.com")
     public void SessionController_FindAll_ShouldReturnOkResponse() throws Exception {
         mockMvc.perform(get("/api/session")
@@ -277,7 +357,7 @@ public class SessionControllerIT {
 
     @Test
     @Order(17)
-    @DisplayName("it should no longer participate(delete user) from an existing session")
+    @DisplayName("it should successfully no longer participate(delete user) from an existing session")
     @WithUserDetails(value = "brice@denice.com")
     public void SessionController_NoLongerParticipate_ShouldReturnOkResponse() throws Exception {
         mockMvc.perform(delete("/api/session/{id}/participate/{userId}", sessionId, 2L)
@@ -309,7 +389,7 @@ public class SessionControllerIT {
 
     @Test
     @Order(20)
-    @DisplayName("it should delete a session")
+    @DisplayName("it should successfully delete a session")
     @WithUserDetails(value = "brice@denice.com")
     public void SessionController_DeleteSession_ShouldReturnOkResponse() throws Exception {
         mockMvc.perform(delete("/api/session/{id}", sessionId)

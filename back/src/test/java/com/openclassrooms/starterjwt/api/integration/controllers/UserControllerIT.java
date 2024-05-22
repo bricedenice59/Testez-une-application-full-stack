@@ -49,9 +49,11 @@ public class UserControllerIT {
         user = userRepository.save(newDefaultuser);
     }
 
+    //region Test unauthorized endpoints
+
     @Test
     @Order(1)
-    @DisplayName("it should fail to find a user when no authorization is given")
+    @DisplayName("it should fail to find a user when no authorization is provided")
     public void UserController_FindById_ShouldReturnUnauthorizedResponse() throws Exception {
         mockMvc.perform(get("/api/user/{id}", user.getId())
                         .contentType(MediaType.APPLICATION_JSON))
@@ -60,12 +62,14 @@ public class UserControllerIT {
 
     @Test
     @Order(2)
-    @DisplayName("it should fail to delete a user when no authorization is given")
+    @DisplayName("it should fail to delete a user when no authorization is provided")
     public void UserController_Delete_ShouldReturnUnauthorizedResponse() throws Exception {
         mockMvc.perform(delete("/api/user/{id}", user.getId())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
     }
+
+    //endregion
 
     @Test
     @Order(3)
