@@ -15,11 +15,6 @@ public abstract class BaseIT {
 
     protected final UserRepository userRepository;
 
-    @BeforeTestClass
-    public void setUp() {
-
-    }
-
     @Autowired
     public BaseIT(UserRepository userRepository) {
         this.userRepository = userRepository;
