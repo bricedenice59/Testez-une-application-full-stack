@@ -1,52 +1,25 @@
 package com.openclassrooms.starterjwt.api.integration.controllers;
 
-import com.openclassrooms.starterjwt.models.User;
 import com.openclassrooms.starterjwt.repository.UserRepository;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
-import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Tag("api/user")
-public class UserControllerIT {
+public class UserControllerIT extends BaseIT {
 
     @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    private User user;
-
-    private String userEmail;
-    private String userFirstname;
-    private String userLastName;
-
-    @BeforeAll
-    public void setup() {
-        userEmail = "brice@denice.com";
-        userFirstname = "brice";
-        userLastName = "Denice";
-        //create the default user for authentication purpose used in all here-below tests of this class
-        var newDefaultuser = User.builder()
-                .admin(true)
-                .firstName(userFirstname)
-                .lastName(userLastName)
-                .email(userEmail)
-                .password("bricedenice!1")
-                .build();
-        user = userRepository.save(newDefaultuser);
+    public UserControllerIT(UserRepository userRepository) {
+        super(userRepository);
     }
 
     //region Test unauthorized endpoints
@@ -103,7 +76,7 @@ public class UserControllerIT {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.firstName").value(userFirstname))
-                .andExpect(jsonPath("$.lastName").value(userLastName))
+                .andExpect(jsonPath("$.lastName").value(userLastname))
                 .andExpect(jsonPath("$.email").value(userEmail));
     }
 

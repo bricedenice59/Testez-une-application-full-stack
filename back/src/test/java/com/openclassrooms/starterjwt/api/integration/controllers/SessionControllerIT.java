@@ -3,15 +3,14 @@ package com.openclassrooms.starterjwt.api.integration.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.openclassrooms.starterjwt.dto.SessionDto;
 import com.openclassrooms.starterjwt.models.User;
+
 import com.openclassrooms.starterjwt.repository.UserRepository;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
-import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,36 +21,25 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Tag("api/session")
-public class SessionControllerIT {
-
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private UserRepository userRepository;
+public class SessionControllerIT extends BaseIT {
 
     private String sessionName;
     private Long sessionId;
-    private User user;
     private User anotherUser;
+
+    @Autowired
+    public SessionControllerIT(UserRepository userRepository) {
+        super(userRepository);
+    }
 
     @BeforeAll
     public void setup() {
         sessionId = 1L;
         sessionName = "Session 1";
 
-        //create the default user for authentication purpose used in all here-below tests of this class
-        var newDefaultuser = User.builder()
-                .admin(true)
-                .firstName("Brice")
-                .lastName("Denice")
-                .email("brice@denice.com")
-                .password("bricedenice!1")
-                .build();
         var newUser = User.builder()
                 .admin(true)
                 .firstName("AnotherBrice")
@@ -59,7 +47,6 @@ public class SessionControllerIT {
                 .email("amotherbrice@denice.com")
                 .password("bricedenice!1")
                 .build();
-        user = userRepository.save(newDefaultuser);
         anotherUser = userRepository.save(newUser);
     }
 
