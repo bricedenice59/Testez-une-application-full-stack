@@ -37,6 +37,7 @@ public class SessionControllerIT {
     private String sessionName;
     private Long sessionId;
     private User user;
+    private User anotherUser;
 
     @BeforeAll
     public void setup() {
@@ -51,7 +52,15 @@ public class SessionControllerIT {
                 .email("brice@denice.com")
                 .password("bricedenice!1")
                 .build();
+        var newUser = User.builder()
+                .admin(true)
+                .firstName("AnotherBrice")
+                .lastName("AnotherDenice")
+                .email("amotherbrice@denice.com")
+                .password("bricedenice!1")
+                .build();
         user = userRepository.save(newDefaultuser);
+        anotherUser = userRepository.save(newUser);
     }
 
     @Test
@@ -228,17 +237,7 @@ public class SessionControllerIT {
     @DisplayName("it should participate(add a user) to a session")
     @WithUserDetails(value = "brice@denice.com")
     public void SessionController_Participate_ShouldReturnOkResponse() throws Exception {
-        var newUser = User.builder()
-                .id(2L)
-                .admin(true)
-                .firstName("AnotherBrice")
-                .lastName("AnotherDenice")
-                .email("amotherbrice@denice.com")
-                .password("bricedenice!1")
-                .build();
-        userRepository.save(newUser);
-
-        mockMvc.perform(post("/api/session/{id}/participate/{userId}", sessionId, newUser.getId())
+        mockMvc.perform(post("/api/session/{id}/participate/{userId}", sessionId, anotherUser.getId())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
