@@ -1,10 +1,9 @@
-package com.openclassrooms.starterjwt.api.integration.controllers;
+package com.openclassrooms.starterjwt.integration.controllers;
 
 import com.openclassrooms.starterjwt.models.User;
 import com.openclassrooms.starterjwt.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.test.context.event.annotation.BeforeTestClass;
 import org.springframework.test.web.servlet.MockMvc;
 
 @AutoConfigureMockMvc

@@ -1,4 +1,4 @@
-package com.openclassrooms.starterjwt.api.integration.controllers;
+package com.openclassrooms.starterjwt.integration.controllers;
 
 import com.openclassrooms.starterjwt.repository.UserRepository;
 import org.junit.jupiter.api.*;

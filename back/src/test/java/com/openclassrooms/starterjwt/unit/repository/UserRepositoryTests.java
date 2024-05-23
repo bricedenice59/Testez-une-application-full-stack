@@ -1,4 +1,4 @@
-package com.openclassrooms.starterjwt.api.repository;
+package com.openclassrooms.starterjwt.unit.repository;
 
 import com.openclassrooms.starterjwt.models.User;
 import com.openclassrooms.starterjwt.repository.UserRepository;
