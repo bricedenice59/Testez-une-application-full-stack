@@ -39,7 +39,7 @@ public class JwtUtils {
             .compact();
   }
 
-  private SecretKey getSignInKey() {
+  public SecretKey getSignInKey() {
     return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
   }
 
