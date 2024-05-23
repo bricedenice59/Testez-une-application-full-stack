@@ -22,7 +22,7 @@ import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
-public class UserDetailsServiceImplTest {
+public class UserDetailsServiceImplTests {
 
     @Mock
     private UserRepository userRepository;
