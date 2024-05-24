@@ -18,7 +18,11 @@ describe('NotFoundComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should display page not found', () => {
     expect(component).toBeTruthy();
+
+    const heading = fixture.nativeElement.querySelector('h1');
+    expect(heading).not.toBeNull();
+    expect(heading.textContent).toBe('Page not found !');
   });
 });
