@@ -25,7 +25,7 @@ describe('AuthService', () => {
     expect(mockAuthService).toBeTruthy();
   });
 
-  it('should send a POST request to register', (done) => {
+  it('should send a POST request to register', () => {
     const registerRequest = {
       email: 'yoga@user.com',
       password: 'none!',
@@ -36,17 +36,16 @@ describe('AuthService', () => {
     const register$ = mockAuthService.register(registerRequest);
     register$.subscribe({
       next: (data : void) : void => {
-        done();
       },
       error: () => {
         console.log('Failed to register')
-        done();
       }
     });
-    const req = HttpTestingControllerMock.expectOne('api/auth/register');
 
+    const req = HttpTestingControllerMock.expectOne('api/auth/register');
     expect(req.request.method).toBe('POST');
-    req.flush(null); // Since the expected response is void, we flush null.
+    expect(req.request.body).toEqual(registerRequest);
+    req.flush(null);
   });
 
   it('should send a POST request to login', () => {
@@ -73,6 +72,7 @@ describe('AuthService', () => {
 
     const req = HttpTestingControllerMock.expectOne('api/auth/login');
     expect(req.request.method).toBe('POST');
-    req.flush(expectedResponse);
+    expect(req.request.body).toEqual(loginRequest);
+    req.flush(null);
   });
 });
