@@ -11,21 +11,27 @@ import {Observable, of} from "rxjs";
 
 describe('AppComponent', () => {
   let appComponent: AppComponent;
-
-  const mockSessionService = {
-    sessionInformation: {
-      admin: true,
-      id: 1
-    },
-    $isLogged: jest.fn(),
-    logOut: jest.fn().mockReturnValue(of(null))
-  }
-
-  const mockRouter = {
-    navigate: (commands: any[], extras?: any, options?: any) => {},
-  } as Router;
+  let mockSessionService: Partial<SessionService>;
+  let mockRouter: Partial<Router>;
 
   beforeEach(async () => {
+    mockSessionService = {
+      sessionInformation: {
+        admin: true,
+        id: 1,
+        firstName:'',
+        lastName:'',
+        type:'',
+        username:'',
+        token:''
+      },
+      $isLogged: jest.fn(),
+      logOut: jest.fn().mockReturnValue(of(null))
+    }
+    mockRouter = {
+      navigate: jest.fn()
+    };
+
     await TestBed.configureTestingModule({
       imports: [
         HttpClientModule,
@@ -40,6 +46,7 @@ describe('AppComponent', () => {
         { provide: Router, useValue: mockRouter },
       ]
     }).compileComponents();
+
     const fixture = TestBed.createComponent(AppComponent);
     appComponent = fixture.componentInstance;
     fixture.detectChanges();
@@ -51,15 +58,14 @@ describe('AppComponent', () => {
 
   it('should return logged in status', () => {
     const loggedStatus: Observable<boolean> = of(true);
+    // @ts-ignore
     mockSessionService.$isLogged.mockReturnValue(loggedStatus);
     expect(appComponent.$isLogged()).toBe(loggedStatus);
   });
 
   it('should logout user successfully and navigate to the homepage or the root view', () => {
-    const routeSpy = jest.spyOn(mockRouter, 'navigate').mockImplementation(async () => true);
-
     appComponent.logout();
     expect(mockSessionService.logOut).toHaveBeenCalled();
-    expect(routeSpy).toHaveBeenCalledWith(['']);
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['']);
   });
 });

@@ -6,7 +6,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { RouterTestingModule } from '@angular/router/testing';
 import { expect } from '@jest/globals';
 import { SessionService } from 'src/app/services/session.service';
 
@@ -19,20 +18,23 @@ import {SessionInformation} from "../../../../interfaces/sessionInformation.inte
 describe('LoginComponent', () => {
   let component: LoginComponent;
   let fixture: ComponentFixture<LoginComponent>;
+  let mockRouter: Partial<Router>;
+  let mockAuthService : Partial<AuthService>;
+  let mockSessionService : Partial<SessionService>;
 
-  const mockAuthService = {
-    login: jest.fn(() => of({} as SessionInformation))
+  mockRouter = {
+    navigate: jest.fn(),
   };
-
-  const mockSessionService = {
-    logIn: jest.fn(() => of())
-  };
-
-  const mockRouter = {
-    navigate: (commands: any[], extras?: any, options?: any) => {},
-  } as Router;
 
   beforeEach(async () => {
+    mockAuthService = {
+      login: jest.fn(() => of({} as SessionInformation))
+    };
+
+    mockSessionService = {
+      logIn: jest.fn(() => of())
+    };
+
     await TestBed.configureTestingModule({
       declarations: [LoginComponent],
       providers: [
@@ -41,7 +43,6 @@ describe('LoginComponent', () => {
         { provide: Router, useValue: mockRouter },
       ],
       imports: [
-        RouterTestingModule,
         BrowserAnimationsModule,
         HttpClientModule,
         MatCardModule,
@@ -51,6 +52,7 @@ describe('LoginComponent', () => {
         ReactiveFormsModule]
     })
       .compileComponents();
+
     fixture = TestBed.createComponent(LoginComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -74,15 +76,11 @@ describe('LoginComponent', () => {
   });
 
   it('should log-in successfully a user if credentials are correct, fill the session with the correct user information and navigate to sessions page)', () => {
-    const loginSpy = jest.spyOn(mockAuthService, 'login').mockImplementation(() => of({} as SessionInformation));
-    const sessionServiceSpy = jest.spyOn(mockSessionService, 'logIn');
-    const navigateSpy = jest.spyOn(mockRouter, 'navigate').mockImplementation(async () => true);
-
     component.submit();
 
     expect(component.onError).toBe(false);
-    expect(loginSpy).toHaveBeenCalled();
-    expect(sessionServiceSpy).toHaveBeenCalled();
-    expect(navigateSpy).toHaveBeenCalledWith(['/sessions']);
+    expect(mockAuthService.login).toHaveBeenCalled();
+    expect(mockSessionService.logIn).toHaveBeenCalled();
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['/sessions']);
   });
 });

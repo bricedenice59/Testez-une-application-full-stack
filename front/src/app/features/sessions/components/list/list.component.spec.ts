@@ -14,6 +14,8 @@ import {ActivatedRoute, RouterLink} from "@angular/router";
 describe('ListComponent', () => {
   let component: ListComponent;
   let fixture: ComponentFixture<ListComponent>;
+  let mockSessionService: Partial<SessionService>;
+  let mockSessionApiService: Partial<SessionApiService>;
 
   const mockSessions: Session[] = [{
     id: 1,
@@ -36,17 +38,23 @@ describe('ListComponent', () => {
       updatedAt: new Date()
     }];
 
-  const mockSessionService = {
-    sessionInformation: {
-      admin: true,
-      id: 1
-    }
-  }
-  const mockSessionApiService= {
-    all: jest.fn().mockReturnValue(of(mockSessions))
-  }
-
   beforeEach(async () => {
+    mockSessionService = {
+      sessionInformation: {
+        admin: true,
+        id: 1,
+        firstName:'',
+        lastName:'',
+        type:'',
+        username:'',
+        token:''
+      }
+    };
+
+    mockSessionApiService= {
+      all: jest.fn().mockReturnValue(of(mockSessions))
+    }
+
     await TestBed.configureTestingModule({
       declarations: [ListComponent],
       imports: [

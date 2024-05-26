@@ -18,34 +18,45 @@ import '@testing-library/jest-dom';
 describe('MeComponent', () => {
   let component: MeComponent;
   let fixture: ComponentFixture<MeComponent>;
-
-  const user: User = {
-    id: 1,
-    email: 'yoga@user.com',
-    password: 'none!',
-    firstName: 'yoga',
-    lastName: 'yoga',
-    admin: false,
-    createdAt: new Date('05/24/2024'),
-  };
-
-  const mockSessionService = {
-    sessionInformation: {
-      admin: true,
-      id: 1
-    },
-    logOut: jest.fn(() => of({}))
-  }
-  const mockUserService = {
-    getById: jest.fn(() => of(user)),
-    delete: jest.fn(() => of(null)),
-  };
-
-  const mockRouter = {
-    navigate: (commands: any[], extras?: any, options?: any) => {},
-  } as Router;
+  let mockSessionService: Partial<SessionService>;
+  let mockUserService: Partial<UserService>;
+  let mockRouter: Partial<Router>;
+  let user: User;
 
   beforeEach(async () => {
+    // Define the user object here if it's not going to change across tests
+    user = {
+      id: 1,
+      email: 'yoga@user.com',
+      password: 'none!',
+      firstName: 'yoga',
+      lastName: 'yoga',
+      admin: false,
+      createdAt: new Date('05/24/2024'),
+    };
+
+    mockSessionService = {
+      sessionInformation: {
+        admin: true,
+        id: 1,
+        firstName:'',
+        lastName:'',
+        type:'',
+        username:'',
+        token:''
+      },
+      logOut: jest.fn(() => of({}))
+    };
+
+    mockUserService = {
+      getById: jest.fn(() => of(user)),
+      delete: jest.fn(() => of(null)),
+    };
+
+    mockRouter = {
+      navigate: jest.fn(),
+    };
+
     await TestBed.configureTestingModule({
       declarations: [MeComponent],
       imports: [
@@ -61,8 +72,7 @@ describe('MeComponent', () => {
         { provide: UserService, useValue: mockUserService },
         { provide: Router, useValue: mockRouter },
       ],
-    })
-      .compileComponents();
+    }).compileComponents();
 
     fixture = TestBed.createComponent(MeComponent);
     component = fixture.componentInstance;

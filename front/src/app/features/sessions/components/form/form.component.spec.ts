@@ -22,7 +22,12 @@ import {Session} from "../../interfaces/session.interface";
 describe('FormComponent', () => {
   let component: FormComponent;
   let fixture: ComponentFixture<FormComponent>;
+  let mockTeacherService: Partial<TeacherService>;
+  let mockSessionService: Partial<SessionService>;
+  let mockSessionApiService: Partial<SessionApiService>;
   let mockFormBuilder: FormBuilder;
+  let mockActivatedRoute: any;
+  let mockRouter: Partial<Router>;
 
   const teachersMock: Teacher[] = [{
     id: 1,
@@ -49,37 +54,43 @@ describe('FormComponent', () => {
     users: [1]
   };
 
-  const mockTeacherService = {
-    all: jest.fn().mockReturnValue(of(teachersMock)),
-  };
-
-  const mockSessionService = {
-    sessionInformation: {
-      admin: true
-    }
-  }
-
-  const mockActivatedRoute = {
-    snapshot: {
-      paramMap: {
-        get: () => '1'
-      }
-    }
-  };
-
-  const mockRouter = {
-    navigate: (commands: any[], extras?: any, options?: any) => {},
-    url: '/this_page'
-  } as Router;
-
-  const mockSessionApiService = {
-    detail: jest.fn().mockReturnValue(of(session)),
-    create: jest.fn().mockReturnValue(of(session)),
-    update: jest.fn().mockReturnValue(of(session))
-  };
-
 
   beforeEach(async () => {
+    mockRouter = {
+      navigate: jest.fn(),
+      url: '/this_page'
+    };
+
+    mockActivatedRoute = {
+      snapshot: {
+        paramMap: {
+          get: () => '1'
+        }
+      }
+    };
+
+    mockTeacherService = {
+      all: jest.fn().mockReturnValue(of(teachersMock)),
+    };
+
+    mockSessionService = {
+      sessionInformation: {
+        admin: true,
+        id: 1,
+        firstName:'',
+        lastName:'',
+        type:'',
+        username:'',
+        token:''
+      }
+    };
+
+    mockSessionApiService = {
+      detail: jest.fn().mockReturnValue(of(session)),
+      create: jest.fn().mockReturnValue(of(session)),
+      update: jest.fn().mockReturnValue(of(session))
+    };
+
     mockFormBuilder = new FormBuilder();
 
     await TestBed.configureTestingModule({
@@ -116,6 +127,9 @@ describe('FormComponent', () => {
   });
 
   it('should initialize teachers$', () => {
+    expect(component.teachers$).not.toBeUndefined();
+
+    // @ts-ignore
     expect(component.teachers$).toEqual(mockTeacherService.all());
   });
 
@@ -141,7 +155,6 @@ describe('FormComponent', () => {
 
   it('should submit a new session with a form correctly filled be redirected to the sessions page', () => {
     const snackBarOpenSpy = jest.spyOn(TestBed.inject(MatSnackBar), 'open').mockImplementation();
-    const routeSpy = jest.spyOn(mockRouter, 'navigate').mockImplementation(async () => true);
 
     component.onUpdate = false;
     component.sessionForm = mockFormBuilder.group({
@@ -155,12 +168,11 @@ describe('FormComponent', () => {
 
     expect(mockSessionApiService.create).toHaveBeenCalled();
     expect(snackBarOpenSpy).toHaveBeenCalledWith('Session created !', 'Close', { duration: 3000 });
-    expect(routeSpy).toHaveBeenCalledWith(['sessions']);
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['sessions']);
   });
 
   it('should update an existing session and be redirected to the sessions page', () => {
     const snackBarOpenSpy = jest.spyOn(TestBed.inject(MatSnackBar), 'open').mockImplementation();
-    const routeSpy = jest.spyOn(mockRouter, 'navigate').mockImplementation(async () => true);
 
     component.onUpdate = true;
     component.sessionForm = mockFormBuilder.group({
@@ -172,6 +184,6 @@ describe('FormComponent', () => {
     component.submit();
     expect(mockSessionApiService.update).toHaveBeenCalled();
     expect(snackBarOpenSpy).toHaveBeenCalledWith('Session updated !', 'Close', { duration: 3000 });
-    expect(routeSpy).toHaveBeenCalledWith(['sessions']);
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['sessions']);
   });
 });

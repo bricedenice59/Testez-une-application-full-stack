@@ -16,16 +16,17 @@ import {Router} from "@angular/router";
 describe('RegisterComponent', () => {
   let component: RegisterComponent;
   let fixture: ComponentFixture<RegisterComponent>;
-
-  const mockAuthService = {
-    register: jest.fn(() => of(undefined))
-  };
-
-  const mockRouter = {
-    navigate: (commands: any[], extras?: any, options?: any) => {},
-  } as Router;
+  let mockAuthService : Partial<AuthService>;
+  let mockRouter: Partial<Router>;
 
   beforeEach(async () => {
+    mockAuthService = {
+      register: jest.fn(() => of(undefined))
+    };
+    mockRouter = {
+      navigate: jest.fn(),
+    };
+
     await TestBed.configureTestingModule({
       declarations: [RegisterComponent],
       providers: [
@@ -67,13 +68,10 @@ describe('RegisterComponent', () => {
   });
 
   it('should register successfully a user and navigate to the login page)', () => {
-    const registerSpy = jest.spyOn(mockAuthService, 'register').mockImplementation(()=> of(undefined));
-    const navigateSpy = jest.spyOn(mockRouter, 'navigate').mockImplementation(async () => true);
-
     component.submit();
 
     expect(component.onError).toBe(false);
-    expect(registerSpy).toHaveBeenCalled();
-    expect(navigateSpy).toHaveBeenCalledWith(['/login']);
+    expect(mockAuthService.register).toHaveBeenCalled();
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['/login']);
   });
 });
