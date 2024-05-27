@@ -74,4 +74,33 @@ describe('RegisterComponent', () => {
     expect(mockAuthService.register).toHaveBeenCalled();
     expect(mockRouter.navigate).toHaveBeenCalledWith(['/login']);
   });
+
+  it('should fill all the inputs necessary for registering a new user in form control', () => {
+    const inputFirstname = fixture.nativeElement.querySelector('[formControlName="firstName"]');
+    const inputLastname = fixture.nativeElement.querySelector('[formControlName="lastName"]');
+    const inputEmail = fixture.nativeElement.querySelector('[formControlName="email"]');
+    const inputPassword = fixture.nativeElement.querySelector('[formControlName="password"]');
+
+    expect(inputFirstname).toBeTruthy();
+    expect(inputLastname).toBeTruthy();
+    expect(inputEmail).toBeTruthy();
+    expect(inputPassword).toBeTruthy();
+
+    inputFirstname.value = 'yoga_firstname';
+    inputFirstname.dispatchEvent(new Event('input'));
+
+    inputLastname.value = 'yoga_lastname';
+    inputLastname.dispatchEvent(new Event('input'));
+
+    inputEmail.value = 'yoga@user.com';
+    inputEmail.dispatchEvent(new Event('input'));
+
+    inputPassword.value = 'password!';
+    inputPassword.dispatchEvent(new Event('input'));
+
+    expect(component.form.value.firstName).toEqual('yoga_firstname');
+    expect(component.form.value.lastName).toEqual('yoga_lastname');
+    expect(component.form.value.email).toEqual('yoga@user.com');
+    expect(component.form.value.password).toEqual('password!');
+  });
 });

@@ -22,10 +22,6 @@ describe('LoginComponent', () => {
   let mockAuthService : Partial<AuthService>;
   let mockSessionService : Partial<SessionService>;
 
-  mockRouter = {
-    navigate: jest.fn(),
-  };
-
   beforeEach(async () => {
     mockAuthService = {
       login: jest.fn(() => of({} as SessionInformation))
@@ -33,6 +29,10 @@ describe('LoginComponent', () => {
 
     mockSessionService = {
       logIn: jest.fn(() => of())
+    };
+
+    mockRouter = {
+      navigate: jest.fn(),
     };
 
     await TestBed.configureTestingModule({
@@ -75,12 +75,29 @@ describe('LoginComponent', () => {
     expect(errorElement.textContent).toEqual('An error occurred');
   });
 
-  it('should log-in successfully a user if credentials are correct, fill the session with the correct user information and navigate to sessions page)', () => {
+  it('should log-in successfully a user if credentials are correct and navigate to sessions page)', () => {
     component.submit();
 
     expect(component.onError).toBe(false);
     expect(mockAuthService.login).toHaveBeenCalled();
     expect(mockSessionService.logIn).toHaveBeenCalled();
     expect(mockRouter.navigate).toHaveBeenCalledWith(['/sessions']);
+  });
+
+  it('should set an email and a password in form control', () => {
+    const inputEmail = fixture.nativeElement.querySelector('[formControlName="email"]');
+    const inputPassword = fixture.nativeElement.querySelector('[formControlName="password"]');
+
+    expect(inputEmail).toBeTruthy();
+    expect(inputPassword).toBeTruthy();
+
+    inputEmail.value = 'yoga@user.com';
+    inputEmail.dispatchEvent(new Event('input'));
+
+    inputPassword.value = 'password!';
+    inputPassword.dispatchEvent(new Event('input'));
+
+    expect(component.form.value.email).toEqual('yoga@user.com');
+    expect(component.form.value.password).toEqual('password!');
   });
 });
