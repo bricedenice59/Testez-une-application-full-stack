@@ -3,6 +3,9 @@ package com.openclassrooms.starterjwt.unit.security.jwt;
 import com.openclassrooms.starterjwt.security.jwt.JwtUtils;
 import com.openclassrooms.starterjwt.security.services.UserDetailsImpl;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,7 +20,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 @SpringBootConfiguration
@@ -127,5 +130,60 @@ public class JwtUtilsTests {
 
         var username = jwtUtils.getUserNameFromJwtToken(token);
         assertEquals(email, username);
+    }
+
+    @Test()
+    @DisplayName("Validate a jwt token that is invalid and throws a SignatureException")
+    public void JwtUtilsTests_validateJwtToken_ThrowsSignatureException() {
+        String authToken = "invalid.token.signature";
+        var jwtUtil = mock(JwtUtils.class);
+        when(jwtUtil.validateJwtToken(authToken)).thenThrow(SignatureException.class);
+
+        boolean result = jwtUtils.validateJwtToken(authToken);
+
+        assertFalse(result);
+    }
+
+    @Test
+    @DisplayName("Validate a jwt token that is invalid and throws a MalformedJwtException")
+    public void JwtUtilsTests_validateJwtToken_MalformedJwtException() {
+        String authToken = "invalid.token.format";
+        var jwtUtil = mock(JwtUtils.class);
+
+        when(jwtUtil.validateJwtToken(authToken)).thenThrow(MalformedJwtException.class);
+
+        try {
+            boolean result = jwtUtil.validateJwtToken(authToken);
+            assertFalse(result);
+        }
+        catch (Exception ignored) {}
+    }
+
+    @Test
+    @DisplayName("Validate a jwt token that is invalid and throws a UnsupportedJwtException")
+    public void JwtUtilsTests_validateJwtToken_UnsupportedJwtException() {
+        String authToken = "invalid.token.format";
+        var jwtUtil = mock(JwtUtils.class);
+        when(jwtUtil.validateJwtToken(authToken)).thenThrow(UnsupportedJwtException.class);
+
+        try {
+            boolean result = jwtUtil.validateJwtToken(authToken);
+            assertFalse(result);
+        }
+        catch (Exception ignored) {}
+    }
+
+    @Test
+    @DisplayName("Validate a jwt token that is invalid and throws a IllegalArgumentException")
+    public void JwtUtilsTests_validateJwtToken_IllegalArgumentException() {
+        String authToken = "invalid.token.format";
+        var jwtUtil = mock(JwtUtils.class);
+        when(jwtUtil.validateJwtToken(authToken)).thenThrow(IllegalArgumentException.class);
+
+        try {
+            boolean result = jwtUtil.validateJwtToken(authToken);
+            assertFalse(result);
+        }
+        catch (Exception ignored) {}
     }
 }

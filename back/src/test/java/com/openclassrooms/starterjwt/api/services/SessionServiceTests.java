@@ -1,6 +1,7 @@
 package com.openclassrooms.starterjwt.api.services;
 
 import com.openclassrooms.starterjwt.exception.BadRequestException;
+import com.openclassrooms.starterjwt.exception.NotFoundException;
 import com.openclassrooms.starterjwt.models.Session;
 import com.openclassrooms.starterjwt.models.Teacher;
 import com.openclassrooms.starterjwt.models.User;
@@ -154,6 +155,35 @@ public class SessionServiceTests {
     }
 
     @Test
+    @DisplayName("Test Participate with a not defined session should throw a NotFoundException")
+    public void SessionService_ParticipateWithUnknownSession_ShouldThrowNotFoundException() {
+        Long sessionId = 1L;
+        Long userId = 2L;
+
+        when(sessionRepository.findById(sessionId)).thenReturn(Optional.empty());
+
+        assertThrows(
+                NotFoundException.class,
+                () -> sessionService.participate(mockedSession.getId(), userId),
+                "Expected participate() to throw NotFoundException, but it didn't"
+        );
+    }
+
+    @Test
+    @DisplayName("Test Participate with a not defined user in session should throw a NotFoundException")
+    public void SessionService_ParticipateWithUnknownUser_ShouldThrowNotFoundException() {
+        Long userId = 2L;
+
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+        assertThrows(
+                NotFoundException.class,
+                () -> sessionService.participate(mockedSession.getId(), userId),
+                "Expected participate() to throw NotFoundException, but it didn't"
+        );
+    }
+
+    @Test
     @DisplayName("Test Participate with an existing same user in session should throw a BadRequestException")
     public void SessionService_ParticipateAgainWithSameUser_ShouldThrowException() {
         Long sessionId = 1L;
@@ -173,6 +203,21 @@ public class SessionServiceTests {
                 BadRequestException.class,
                 () -> sessionService.participate(mockedSession.getId(), userId),
                 "Expected participate() to throw BadRequestException, but it didn't"
+        );
+    }
+
+    @Test
+    @DisplayName("Test NoLongerParticipate with a not defined session should throw a NotFoundException")
+    public void SessionService_NoLongerParticipateWithUnknownSession_ShouldThrowNotFoundException() {
+        Long sessionId = 1L;
+        Long userId = 2L;
+
+        when(sessionRepository.findById(sessionId)).thenReturn(Optional.empty());
+
+        assertThrows(
+                NotFoundException.class,
+                () -> sessionService.noLongerParticipate(mockedSession.getId(), userId),
+                "Expected participate() to throw NotFoundException, but it didn't"
         );
     }
 
