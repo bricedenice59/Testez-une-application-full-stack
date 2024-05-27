@@ -12,10 +12,10 @@
       <div *ngIf="user" fxLayout="column" fxLayoutAlign="start center">
         <p>Name: {{ user.firstName }} {{ user.lastName | uppercase }}</p>
         <p>Email: {{ user.email }}</p>
-        <p *ngIf="user.admin" class="my2">You are admin</p>
+        <p *ngIf="user.admin" class="my2" id="adminLabel">You are admin</p>
         <div *ngIf="!user.admin" fxLayout="column" class="my2" fxLayoutAlign="center center">
-          <p>Delete my account:</p>
-          <button mat-raised-button color="warn" (click)="delete()">
+          <p id="deleteLabel">Delete my account:</p>
+          <button mat-raised-button color="warn" (click)="delete()" id="deleteButton">
             <mat-icon>delete</mat-icon>
             <span class="ml1">Detail</span>
           </button>
