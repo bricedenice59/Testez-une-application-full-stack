@@ -22,17 +22,6 @@ describe('Account page', () => {
     cy.visit('/login');
   });
 
-  it('should not be possible to proceed with the login process because the submit button is disabled due to an incorrect email input', () => {
-    const emailNotCorrectlyFormattedAccount = {
-      ...adminAccount,
-      email: 'yogastudio.com',
-    };
-    cy.get('input[formControlName=email]').type(emailNotCorrectlyFormattedAccount.email);
-    cy.get('input[formControlName=password]').type(emailNotCorrectlyFormattedAccount.password);
-
-    cy.get('#submitButton').should('be.disabled');
-  });
-
   describe('As an admin user', () => {
     beforeEach(() => {
       cy.intercept('POST', '/api/auth/login', adminAccount);

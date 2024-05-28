@@ -1,16 +1,27 @@
 describe('Login spec', () => {
-  it('Login successfull', () => {
-    cy.visit('/login')
 
-    cy.intercept('POST', '/api/auth/login', {
-      body: {
-        id: 1,
-        username: 'userName',
-        firstName: 'firstName',
-        lastName: 'lastName',
-        admin: true
-      },
-    })
+  const loginAccount = {
+    email: 'yoga@studio.com',
+    password: 'password!',
+  };
+
+  it('should not be possible to proceed with the login process because the submit button is disabled due to an incorrect email input', () => {
+    cy.visit('/login');
+
+    const emailNotCorrectlyFormattedAccount = {
+      ...loginAccount,
+      email: 'yogastudio.com',
+    };
+    cy.get('input[formControlName=email]').type(emailNotCorrectlyFormattedAccount.email);
+    cy.get('input[formControlName=password]').type(emailNotCorrectlyFormattedAccount.password);
+
+    cy.get('#submitButton').should('be.disabled');
+  });
+
+  it('Login successfully', () => {
+    cy.visit('/login');
+
+    cy.intercept('POST', '/api/auth/login', loginAccount);
 
     cy.intercept(
       {
@@ -19,8 +30,11 @@ describe('Login spec', () => {
       },
       []).as('session')
 
-    cy.get('input[formControlName=email]').type("yoga@studio.com")
-    cy.get('input[formControlName=password]').type(`${"test!1234"}{enter}{enter}`)
+    cy.get('input[formControlName=email]').type(loginAccount.email);
+    cy.get('input[formControlName=password]').type(loginAccount.password);
+
+    cy.get('#submitButton').should('be.enabled');
+    cy.get('#submitButton').click();
 
     cy.url().should('include', '/sessions')
   })
