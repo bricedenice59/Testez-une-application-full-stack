@@ -1,0 +1,69 @@
+= Testez-une-application-full-stack
+:toc:
+
+== Prerequisites
+- **Java Development Kit (JDK)**
+
+- **Apache Maven:** Install [Maven](https://maven.apache.org/) for building and managing the project's dependencies.
+
+=== Angular Project dependencies installation
+
+[source]
+$ cd front && npm install --force
+
+=== Mount a MySQL Docker image with docker
+
+The configuration file *docker-compose.yml* can be found at the root of the back repository. +
+It consists in 2 different services:
+
+* One MySQL instance
+* One Adminer instance
+
+I am using *docker secrets* to manage any sensitive data such as database password which the container needs at runtime but you don't want to store in the image or in source control.
+https://docs.docker.com/engine/swarm/secrets/
+
+* Run docker in swarm mode by using
++
+[source]
+$ docker swarm init
+--
+
+* Create a random password for the mySQL database root user  (mysql-root-pass is the secret name defined in docker-compose.yml)
++
+[source]
+$ openssl rand -base64 12 | docker secret create mysql-root-pass -
+
+* Deploy all services with Docker stack
++
+[source]
+$  docker stack deploy -c docker-compose.yml project5
+--
+
+You can now connect to the MySQL instance by connecting to the web interface of adminer running on http://127.0.0.1:8080  as root user (that is bad practice in production!)
+
+== Code coverage reports
+
+*Front-End (Angular project)*
+
+* Unit tests and integration tests coverage:
++
+[source]
+$  cd front && npx jest --coverage
+--
+
+- Cypress End-To-End tests coverage:
++
+[source]
+$  cd front && npx nyc report --reporter=lcov --reporter=text-summary
+--
+
+
+*Back-End (Spring Boot project)*
+
+* Get Tests executed and Code Coverage using JaCoCo:
++
+[source]
+$  cd back && mvn clean verify
+--
+
+The `index.html` file for the coverage report is located under the `target/site/jacoco` directory in the project.
