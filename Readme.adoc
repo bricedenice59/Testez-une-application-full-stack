@@ -6,11 +6,6 @@
 
 - **Apache Maven:** Install [Maven](https://maven.apache.org/) for building and managing the project's dependencies.
 
-=== Angular Project dependencies installation
-
-[source]
-$ cd front && npm install --force
-
 === Mount a MySQL Docker image with docker
 
 The configuration file *docker-compose.yml* can be found at the root of the back repository. +
@@ -40,6 +35,22 @@ $  docker stack deploy -c docker-compose.yml project5
 --
 
 You can now connect to the MySQL instance by connecting to the web interface of adminer running on http://127.0.0.1:8080  as root user (that is bad practice in production!)
+
+=== Font-end project(Angular) dependencies installation
+
+[source]
+$ cd front && npm install --force
+
+=== Back-end project(Spring boot)
+To run the project successfully, you need to create a file `secrets.properties` in folder /back/src/main/resources/ with followings:
+[source]
+mysql-root-pass=`paste here your mysql root password created in previous step`
+jwt-secret-pass=`paste here your jwt secret key;
+
+You can generate one random jwt key with following command (node.js required)
+
+[source]
+$ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 
 == Code coverage reports
 
